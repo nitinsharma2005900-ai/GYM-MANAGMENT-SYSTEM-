@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fitness Club - Professional Gym Training</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/animate.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+  <style>
+    .wow:first-child {
+      visibility: hidden;
+    }
+    
+    /* Modern Animations */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(193, 19, 37, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(193, 19, 37, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(193, 19, 37, 0); }
+    }
+    
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #87CEEB, #1E90FF);
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease-in-out infinite;
+    }
+    
+    .pulse-btn {
+      animation: pulseGlow 2s infinite;
+    }
+    
+    /* Popup Styles */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #87CEEB, #4682B4);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: slideInDown 0.3s ease-out;
+      font-weight: 600;
+      max-width: 300px;
+    }
+    
+    .toast-notification.success {
+      background: linear-gradient(135deg, #28a745, #1e7e34);
+    }
+    
+    .toast-notification.error {
+      background: linear-gradient(135deg, #dc3545, #a02830);
+    }
+    
+    .toast-notification.info {
+      background: linear-gradient(135deg, #17a2b8, #0c5460);
+    }
+    
+    /* Chatbot Styles */
+    .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 380px;
+      height: 500px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0);
+      transform-origin: bottom right;
+      transition: transform 0.3s ease;
+    }
+    
+    .chatbot-container.open {
+      transform: scale(1);
+    }
+    
+    .chatbot-header {
+      background: linear-gradient(135deg, #87CEEB, #1E90FF);
+      color: white;
+      padding: 15px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .chatbot-header h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+    
+    .chatbot-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+    }
+    
+    .chatbot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    
+    .chat-message {
+      margin-bottom: 12px;
+      display: flex;
+      animation: fadeInScale 0.3s ease;
+    }
+    
+    .chat-message.user {
+      justify-content: flex-end;
+    }
+    
+    .chat-message.bot {
+      justify-content: flex-start;
+    }
+    
+    .chat-bubble {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .chat-message.user .chat-bubble {
+      background: linear-gradient(135deg, #c11325, #8a0020);
+      color: white;
+    }
+    
+    .chat-message.bot .chat-bubble {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .chatbot-input {
+      padding: 10px;
+      border-top: 1px solid #eee;
+      display: flex;
+      gap: 8px;
+    }
+    
+    .chatbot-input input {
+      flex: 1;
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .chatbot-input button {
+      background: linear-gradient(135deg, #c11325, #000000);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .chatbot-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c11325, #000000);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      box-shadow: 0 4px 15px rgba(193, 19, 37, 0.4);
+      z-index: 998;
+      animation: pulseGlow 2s infinite;
+      transition: transform 0.3s ease;
+    }
+    
+    .chatbot-toggle:hover {
+      transform: scale(1.1);
+    }
+    
+    .chatbot-toggle.hide {
+      display: none;
+    }
+    
+    /* Member Data Section */
+    .members-section {
+      display: none;
+      padding: 80px 20px 40px;
+    }
+    
+    .members-section.active {
+      display: block;
+    }
+    
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .member-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-left: 4px solid #87CEEB;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInScale 0.5s ease;
+    }
+    
+    .member-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(30, 144, 255, 0.2);
+    }
+    
+    .member-card h3 {
+      color: #1E90FF;
+      margin-top: 0;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+    }
+    
+    .member-card p {
+      margin: 8px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .member-card .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    
+    .member-card .delete-btn:hover {
+      background: #a02830;
+    }
+    
+    .nav-section {
+      text-align: center;
+      padding: 20px;
+      background: #f9f9f9;
+      margin-bottom: 20px;
+    }
+    
+    .nav-section button {
+      background: linear-gradient(135deg, #c11325, #000000);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.2s ease;
+    }
+    
+    .nav-section button:hover {
+      transform: scale(1.05);
+    }
+    
+    .nav-section button.active {
+      box-shadow: 0 0 20px rgba(193, 19, 37, 0.5);
+    }
+    
+    /* Member Profile Page Styles */
+    .profile-container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 40px auto;
+      text-align: center;
+      animation: fadeInScale 0.5s ease;
+    }
+    
+    .profile-header {
+      background: linear-gradient(135deg, #c11325, #000000);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    
+    .profile-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+    
+    .profile-header h1 {
+      margin: 10px 0;
+      font-size: 28px;
+    }
+    
+    .profile-header p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    
+    .profile-details {
+      text-align: left;
+      margin: 30px 0;
+    }
+    
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #1E90FF;
+      min-width: 150px;
+    }
+    
+    .detail-value {
+      color: #333;
+      text-align: right;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #28a745, #1e7e34);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+    
+    .profile-btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+    
+    .profile-btn.primary {
+      background: linear-gradient(135deg, #87CEEB, #1E90FF);
+      color: white;
+    }
+    
+    .profile-btn.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(30, 144, 255, 0.3);
+    }
+    
+    .profile-btn.secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #87CEEB;
+    }
+    
+    .profile-btn.secondary:hover {
+      background: #87CEEB;
+      color: white;
+    }
+    
+    .welcome-message {
+      background: linear-gradient(135deg, rgba(135, 206, 235, 0.2), rgba(30, 144, 255, 0.1));
+      border-left: 4px solid #87CEEB;
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+  
+</head>
+<body>
+ 
+ <!-- Start Header  -->
+ <header>
+ 	 <div class="container">
+ 	 	<div class="logo">
+ 	 		 <a href="">Fitness <span>Club</span></a>
+ 	 	</div>
+ 	 	<a href="javascript:void(0)" class="ham-burger">
+ 	       <span></span>	
+ 	       <span></span>
+ 	 	</a>
+ 	 	<div class="nav">
+ 	 		<ul>
+ 	 			<li><a href="#home">Home</a></li>
+ 	 			<li><a href="#about">About</a></li>
+ 	 			<li><a href="#service">Services</a></li>
+ 	 			<li><a href="#classes">Classes</a></li>
+ 	 			<li><a href="#schedule">Schedule</a></li>
+ 	 			<li><a href="#price">Price</a></li>
+ 	 			<li><a href="#contact">Contact</a></li>
+ 	 		</ul>
+ 	 	</div>
+ 	 </div>
+ </header>
+ <!-- End Header  -->
+
+  <!-- Start Home -->
+  <section class="home wow flash" id="home">
+  	 <div class="container">
+  	 	  <h1 class="wow slideInLeft" data-wow-delay="1s">It's <span>gym</span> time. Let's go</h1>
+  	 	  <h1 class="wow slideInRight" data-wow-delay="1s">We are ready to <span>fit you</span></h1>
+  	 </div>
+  	  <!-- go down -->
+  	      <a href="#about" class="go-down">
+  	      	  <i class="fa fa-angle-down" aria-hidden="true"></i>
+  	      </a>
+  	  <!-- go down -->
+
+  </section>
+  <!-- End Home -->
+
+
+ <!-- Start About -->
+  <section class="about" id="about">
+  	  <div class="container">
+  	  	  <div class="content">
+  	  	  	   <div class="box wow bounceInUp">
+  	  	  	   	   <div class="inner">
+  	  	  	   	   	   <div class="img">
+  	  	  	   	   	   	  <img src="images/about1.jpg" alt="about" />
+  	  	  	   	   	   </div>
+                       <div class="text">
+                       	   <h4>Free Consultation</h4>
+                       	   <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                       </div>
+  	  	  	   	   </div>
+  	  	  	   </div>
+  	  	  	   	<div class="box wow bounceInUp" data-wow-delay="0.2s">
+  	  	  	   	   <div class="inner">
+  	  	  	   	   	   <div class="img">
+  	  	  	   	   	   	  <img src="images/about2.jpg" alt="about" />
+  	  	  	   	   	   </div>
+                       <div class="text">
+                       	   <h4>Best Training</h4>
+                       	   <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                       </div>
+  	  	  	   	   </div>
+  	  	  	   </div>
+  	  	  	   <div class="box wow bounceInUp" data-wow-delay="0.4s">
+  	  	  	   	   <div class="inner">
+  	  	  	   	   	   <div class="img">
+  	  	  	   	   	   	  <img src="images/about3.jpg" alt="about" />
+  	  	  	   	   	   </div>
+                       <div class="text">
+                       	   <h4>Build Perfect Body</h4>
+                       	   <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                       </div>
+  	  	  	   	   </div>
+  	  	  	   </div>
+  	  	  </div>
+  	  </div>
+  </section>
+ <!-- End About -->
+
+
+ <!-- Start Service -->
+ <section class="service" id="service">
+ 	<div class="container">
+ 		 <div class="content">
+ 		 	  <div class="text box wow slideInLeft">
+                  <h2>Services</h2>
+                  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+                  <a href="#contact" class="btn">Start Now</a>
+ 		 	  </div>
+ 		 	  <div class="accordian box wow slideInRight">
+ 		 	  	    <div class="accordian-container active">
+ 		 	  	    	<div class="head">
+ 		 	  	    		<h4>Cardiovascular Equipment</h4>
+ 		 	  	    		<span class="fa fa-angle-down"></span>
+ 		 	  	    	</div>
+ 		 	  	    	<div class="body">
+ 		 	  	    		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+ 		 	  	    	</div>
+ 		 	  	    </div>
+ 		 	  	    <div class="accordian-container">
+ 		 	  	    	<div class="head">
+ 		 	  	    		<h4>Strength Training Equipment</h4>
+ 		 	  	    		<span class="fa fa-angle-up"></span>
+ 		 	  	    	</div>
+ 		 	  	    	<div class="body">
+ 		 	  	    		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+ 		 	  	    	</div>
+ 		 	  	    </div>
+ 		 	  	    <div class="accordian-container">
+ 		 	  	    	<div class="head">
+ 		 	  	    		<h4>Group Fitness Class</h4>
+ 		 	  	    		<span class="fa fa-angle-up"></span>
+ 		 	  	    	</div>
+ 		 	  	    	<div class="body">
+ 		 	  	    		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+ 		 	  	    	</div>
+ 		 	  	    </div>
+ 		 	  	    <div class="accordian-container">
+ 		 	  	    	<div class="head">
+ 		 	  	    		<h4>Other Services</h4>
+ 		 	  	    		<span class="fa fa-angle-up"></span>
+ 		 	  	    	</div>
+ 		 	  	    	<div class="body">
+ 		 	  	    		<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
+ 		 	  	    	</div>
+ 		 	  	    </div>
+ 		 	  </div>
+ 		 </div>
+ 	</div>
+ </section>
+ <!-- End Service -->
+
+<!-- Start Classes -->
+<section class="classes" id="classes">
+	<div class="container">
+		 <div class="content">
+		 	  <div class="box img wow slideInLeft">
+		 	  	 <img src="images/class2.png" alt="classes" />
+		 	  </div>
+		 	  <div class="box text wow slideInRight">
+		 	  	 <h2>Our Classes</h2>
+		 	  	 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,</p>
+		 	  	<div class="class-items">
+		 	  	 <div class="item wow bounceInUp">
+                     <div class="item-img">
+                     	 <img src="images/class1.jpg" alt="classes" />
+                     	 <div class="price">
+                     	 	 799
+                     	 </div>
+                     </div>
+                     <div class="item-text">
+                     	  <h4>Stretching Training</h4>
+                     	  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                     	  <a href="#contact" class="btn">Get Details</a>
+                     </div>
+		 	  	 </div>
+		 	  	 <div class="item wow bounceInUp">
+                     <div class="item-text">
+                     	  <h4>Stretching Training</h4>
+                     	  <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                     	  <a href="#contact" class="btn">Get Details</a>
+                     </div>
+                     <div class="item-img">
+                     	 <img src="images/class1.jpg" alt="classes" />
+                     	 <div class="price">
+                     	 	 $99
+                     	 </div>
+                     </div>
+		 	  	 </div>
+		 	  	</div>
+		 	  </div>
+		 </div>
+	</div>
+</section>
+<!-- End Classes -->
+
+<!-- Start Today -->
+ <section class="start-today">
+ 	<div class="container">
+ 		 <div class="content">
+ 		 	  <div class="box text wow slideInLeft">
+ 		 	  	 <h2>Start Your Training Today</h2>
+ 		 	  	 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,</p>
+ 		 	  	 <a href="#contact" class="btn">Start Now</a>
+ 		 	  </div>
+ 		 	  <div class="box img wow slideInRight">
+ 		 	  	 <img src="images/gallery4.jpg" alt="start today" />
+ 		 	  </div>
+
+ 		 </div>
+ 	</div>
+ </section>
+<!-- End Start Today -->
+
+<!-- Start Schedule -->
+  <section class="schedule" id="schedule">
+  	 <div class="container">
+  	 	  <div class="content">
+  	 	  	   <div class="box text wow slideInLeft">
+  	 	  	   	   <h2>Classes Schedule</h2>
+  	 	  	   	   <p>
+  	 	  	   	   	Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,
+  	 	  	   	   </p>
+  	 	  	   	   <img src="images/schedule1.png" alt="schedule" />
+  	 	  	   </div>
+  	 	  	   <div class="box timing wow slideInRight">
+                   <table class="table">
+                   	 <tbody>
+                   	 	<tr>
+                   	 		<td class="day">Monday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 	<tr>
+                   	 		<td class="day">Tuesday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 	<tr>
+                   	 		<td class="day">Wednesday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 	<tr>
+                   	 		<td class="day">Thursday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 	<tr>
+                   	 		<td class="day">Friday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 	<tr>
+                   	 		<td class="day">Saturday</td>
+                   	 		<td><strong>9:00 AM</strong></td>
+                   	 		<td>Body Building <br/> 9:00 to 10:00 AM</td>
+                   	 		<td>Room No:210</td>
+                   	 	</tr>
+                   	 </tbody>
+                   </table>
+  	 	  	   </div>
+  	 	  </div>
+  	 </div>
+  </section>
+<!-- End Schedule -->
+
+<!-- Start Gallery -->
+  <section class="gallery" id="gallery">
+  	 <h2>Workout Gallery</h2>
+  	<div class="content">
+  		 <div class="box wow slideInLeft">
+  		 	 <img src="images/gallery1.jpg" alt="gallery" />
+  		 </div>
+  		 <div class="box wow slideInRight">
+  		 	 <img src="images/gallery2.jpg" alt="gallery" />
+  		 </div>
+  		 <div class="box wow slideInLeft">
+  		 	 <img src="images/gallery3.jpg" alt="gallery" />
+  		 </div>
+  		 <div class="box wow slideInRight">
+  		 	 <img src="images/gallery4.jpg" alt="gallery" />
+  		 </div>
+  	</div>
+  </section>
+<!-- End Gallery -->
+
+ <!-- Start Price -->
+  <section class="price-package" id="price">
+  	 <div class="container">
+  	 	  <h2>Choose Your Package</h2>
+  	 	  <p class="title-p">Select the perfect plan for your fitness journey. All packages include free consultation, modern equipment, and expert training.</p>
+  	 	  <div class="content">
+  	 	  	  <div class="box wow bounceInUp">
+  	 	  	  	  <div class="inner">
+  	 	  	  	  	   <div class="price-tag">
+  	 	  	  	  	   	  ₹559/Month
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="img">
+  	 	  	  	  	   	<img src="images/price1.jpg" alt="price" />
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="text">
+  	 	  	  	  	   	  <h3>Body Building Training</h3>
+  	 	  	  	  	   	  <p>Get Free WiFi</p>
+  	 	  	  	  	   	  <p>Month to Month</p>
+  	 	  	  	  	   	  <p>No Time Restrictions</p>
+  	 	  	  	  	   	  <p>Gym and Cardio</p>
+  	 	  	  	  	   	  <p>Service Locker Rooms</p>
+  	 	  	  	  	   	  <a href="#contact" class="btn">Join Now</a>
+  	 	  	  	  	   </div>
+  	 	  	  	  </div>
+  	 	  	  </div>
+  	 	  	  <div class="box wow bounceInUp" data-wow-delay="0.2s">
+  	 	  	  	  <div class="inner">
+  	 	  	  	  	   <div class="price-tag">
+  	 	  	  	  	   	  ₹800/Month
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="img">
+  	 	  	  	  	   	<img src="images/price2.jpg" alt="price" />
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="text">
+  	 	  	  	  	   	  <h3>Premium Training</h3>
+  	 	  	  	  	   	  <p>Get Free WiFi</p>
+  	 	  	  	  	   	  <p>Month to Month</p>
+  	 	  	  	  	   	  <p>No Time Restrictions</p>
+  	 	  	  	  	   	  <p>Gym and Cardio</p>
+  	 	  	  	  	   	  <p>Service Locker Rooms</p>
+  	 	  	  	  	   	  <a href="#contact" class="btn">Join Now</a>
+  	 	  	  	  	   </div>
+  	 	  	  	  </div>
+  	 	  	  </div>
+  	 	  	  <div class="box wow bounceInUp" data-wow-delay="0.4s">
+  	 	  	  	  <div class="inner">
+  	 	  	  	  	   <div class="price-tag">
+  	 	  	  	  	   	  ₹1199/Month
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="img">
+  	 	  	  	  	   	<img src="images/price3.jpg" alt="price" />
+  	 	  	  	  	   </div>
+  	 	  	  	  	   <div class="text">
+  	 	  	  	  	   	  <h3>Elite Membership</h3>
+  	 	  	  	  	   	  <p>Get Free WiFi</p>
+  	 	  	  	  	   	  <p>Month to Month</p>
+  	 	  	  	  	   	  <p>No Time Restrictions</p>
+  	 	  	  	  	   	  <p>Gym and Cardio</p>
+  	 	  	  	  	   	  <p>Service Locker Rooms</p>
+  	 	  	  	  	   	  <a href="#contact" class="btn">Join Now</a>
+  	 	  	  	  	   </div>
+  	 	  	  	  </div>
+  	 	  	  </div>
+  	 	  </div>
+  	 </div>
+  </section>
+ <!-- End Price -->
+
+ <!-- Start Membership Registration -->
+  <section class="contact" id="contact">
+     <div class="container">
+        <div class="content">
+            <div class="box form wow slideInLeft">
+               <h2>Membership Registration</h2>
+               <form id="membershipForm">
+                  <input type="text" id="memberName" placeholder="Full Name" required maxlength="50">
+                  <input type="email" id="memberEmail" placeholder="Email Address" required maxlength="100">
+                  <input type="tel" id="memberPhone" placeholder="Mobile Number" required maxlength="20">
+                  <select id="memberpackage" required style="padding:10px; border: 1px solid #ddd; margin: 10px 0; width: 100%; border-radius: 4px;">
+                     <option value="">Select Package</option>
+                     <option value="Basic - 559/Month">Basic - ₹559/Month</option>
+                     <option value="Standard - 800/Month">Standard - ₹800/Month</option>
+                     <option value="Premium - 1199/Month">Premium - ₹1199/Month</option>
+                  </select>
+                  <textarea id="memberMessage" placeholder="Enter Message" maxlength="500" style="resize: vertical;"></textarea>
+                  <button type="submit" class="gradient-bg pulse-btn">Register Now</button>
+               </form>
+            </div>
+            <div class="box text wow slideInRight">
+                 <h2>Get Connected with Fitness Club</h2>
+                  <p class="title-p">Join our exclusive fitness community and transform your body. We provide world-class training facilities and personalized coaching to help you achieve your fitness goals.</p>
+                  <div class="info">
+                      <ul>
+                          <li><span class="fa fa-map-marker"></span> Mumbai, Chandrawati Ganj</li>
+                          <li><span class="fa fa-phone"></span> +91 9999999999</li>
+                          <li><span class="fa fa-envelope"></span> contact@fitnesscclub.com</li>
+                      </ul>
+                  </div>
+                  <div class="social">
+                       <a href="#"><span class="fa fa-facebook"></span></a>
+                       <a href="#"><span class="fa fa-linkedin"></span></a>
+                       <a href="#"><span class="fa fa-instagram"></span></a>
+                       <a href="#"><span class="fa fa-youtube-play"></span></a>
+                  </div>
+
+                  <div class="copy">
+                      <p style="margin: 20px 0 5px 0;">💪 Powered by <strong>Nitin</strong></p>
+                      <p style="font-size: 12px; color: #999; margin: 0;">Transforming Lives Through Fitness</p>
+                  </div>
+            </div>
+        </div>
+     </div>
+  </section>
+ <!-- End Membership Registration -->
+
+ <!-- Member Profile Page -->
+ <section id="memberProfile" style="display: none; padding: 80px 20px 40px;">
+   <div class="container">
+     <div class="profile-container">
+       <div class="profile-header">
+         <div class="profile-icon">🏆</div>
+         <h1 id="profileName">Welcome Member</h1>
+         <p>Your Fitness Journey Starts Here!</p>
+       </div>
+       
+       <div class="welcome-message">
+         <strong>Congratulations!</strong> You have been successfully registered with Fitness Club. Your membership activation email will be sent soon.
+       </div>
+       
+       <div class="profile-details">
+         <div class="detail-item">
+           <span class="detail-label">📧 Email:</span>
+           <span class="detail-value" id="profileEmail">-</span>
+         </div>
+         <div class="detail-item">
+           <span class="detail-label">📱 Phone:</span>
+           <span class="detail-value" id="profilePhone">-</span>
+         </div>
+         <div class="detail-item">
+           <span class="detail-label">💳 Package:</span>
+           <span class="detail-value" id="profilePackage">-</span>
+         </div>
+         <div class="detail-item">
+           <span class="detail-label">📅 Join Date:</span>
+           <span class="detail-value" id="profileDate">-</span>
+         </div>
+         <div class="detail-item">
+           <span class="detail-label">✓ Status:</span>
+           <span class="detail-value"><span class="status-badge" id="profileStatus">Active</span></span>
+         </div>
+         <div class="detail-item" id="messageItem" style="display: none;">
+           <span class="detail-label">💬 Message:</span>
+           <span class="detail-value" id="profileMessage" style="text-align: left; max-width: 300px;">-</span>
+         </div>
+       </div>
+       
+       <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+         <h3 style="color: #1E90FF; margin-top: 0;">Next Steps:</h3>
+         <ul style="text-align: left; color: #666;">
+           <li>✓ Visit your verification link in the email</li>
+           <li>✓ Download our mobile app for easier access</li>
+           <li>✓ Schedule your free consultation with our trainers</li>
+           <li>✓ Join our community and fitness programs</li>
+         </ul>
+       </div>
+       
+       <div class="action-buttons">
+         <button class="profile-btn primary" onclick="goToHome()">Back to Home</button>
+         <button class="profile-btn secondary" onclick="viewMyProfile()">View All Members</button>
+       </div>
+     </div>
+   </div>
+ </section>
+ <!-- End Member Profile Page -->
+
+ <!-- Start Members Data Section -->
+ <section class="members-section" id="membersView">
+   <div class="container">
+     <div class="nav-section">
+       <button class="nav-btn active" data-section="home">Home</button>
+       <button class="nav-btn" data-section="members">View Members</button>
+     </div>
+     <h2 style="color: #1E90FF; text-align: center; margin-bottom: 10px;">Member Directory</h2>
+     <p style="text-align: center; color: #666; margin-bottom: 30px;">All registered members of our fitness club</p>
+     <div class="members-grid" id="membersGrid">
+       <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">
+         <p>No members registered yet. Be the first to join!</p>
+       </div>
+     </div>
+   </div>
+ </section>
+ <!-- End Members Data Section -->
+
+
+ <!-- jQuery -->
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Comprehensive JavaScript Application -->
+<script>
+  // ============================================
+  // NOTIFICATION SYSTEM
+  // ============================================
+  class NotificationManager {
+    static show(message, type = 'info', duration = 3000) {
+      const notification = document.createElement('div');
+      notification.className = `toast-notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, duration);
+    }
+    
+    static success(msg) { this.show(msg, 'success'); }
+    static error(msg) { this.show(msg, 'error'); }
+    static info(msg) { this.show(msg, 'info'); }
+  }
+
+  // ============================================
+  // MEMBER DATA MANAGEMENT
+  // ============================================
+  class MemberManager {
+    constructor() {
+      this.storageKey = 'gymMembers';
+      this.members = this.loadMembers();
+    }
+    
+    loadMembers() {
+      const data = localStorage.getItem(this.storageKey);
+      return data ? JSON.parse(data) : [];
+    }
+    
+    saveMembers() {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.members));
+    }
+    
+    addMember(memberData) {
+      const member = {
+        id: Date.now(),
+        name: memberData.name,
+        email: memberData.email,
+        phone: memberData.phone,
+        package: memberData.package,
+        message: memberData.message,
+        joinDate: new Date().toLocaleDateString('en-IN'),
+        status: 'Active'
+      };
+      
+      this.members.push(member);
+      this.saveMembers();
+      return member;
+    }
+    
+    deleteMember(id) {
+      this.members = this.members.filter(m => m.id !== id);
+      this.saveMembers();
+    }
+    
+    getMembers() {
+      return this.members;
+    }
+    
+    getMemberStats() {
+      return {
+        total: this.members.length,
+        active: this.members.filter(m => m.status === 'Active').length
+      };
+    }
+  }
+
+  // ============================================
+  // CHATBOT SYSTEM
+  // ============================================
+  class GymChatbot {
+    constructor() {
+      this.name = 'Fitness Buddy';
+      this.conversationHistory = [];
+      this.responses = {
+        greeting: [
+          'नमस्ते! 🙏 Welcome to Fitness Club! How can I help you today?',
+          'Hi there! 💪 Looking for fitness info? Just ask me!',
+          'Hello! I\'m Fitness Buddy, your workout companion. What do you need?'
+        ],
+        pricing: 'We offer three packages: Basic ₹559/Month, Standard ₹800/Month, and Premium ₹1199/Month. Which one interests you?',
+        classes: 'We offer Body Building, Cardio, Stretching Training, and Group Fitness Classes. All classes run throughout the day!',
+        trainer: 'Our certified trainers are available for personalized training sessions. Premium members get free consultation!',
+        location: 'We are located at Chandrawati Ganj, Mumbai. Just call +91 9999999999 for directions!',
+        hours: 'Our gym is open from 6 AM to 10 PM daily. Members can access anytime with their cards!',
+        facilities: 'We have: State-of-the-art equipment, Free WiFi, Locker Rooms, Personal Trainers, Group Classes, and more!',
+        diet: 'A typical daytime diet plan: Breakfast – oats with fruits and almonds; mid-morning snack – yogurt or nuts; lunch – grilled chicken or paneer with salad; afternoon snack – fruit smoothie; dinner – fish or tofu with steamed veggies. Stay hydrated and avoid sugary drinks!',
+        default: [
+          'That\'s great! Feel free to ask about our packages, classes, trainers, or facilities. 😊',
+          'I\'m here 24/7 to answer your fitness questions – ask me anything about workouts, membership, or nutrition!',
+          'Looking for something specific? You can ask me about diet plans, schedules, or how to join.'
+        ]
+      };
+    }
+    
+    getResponse(userMessage) {
+      const msg = userMessage.toLowerCase();
+      
+      if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+        return this.responses.greeting[Math.floor(Math.random() * this.responses.greeting.length)];
+      } else if (msg.includes('price') || msg.includes('cost') || msg.includes('fee')) {
+        return this.responses.pricing;
+      } else if (msg.includes('class') || msg.includes('training')) {
+        return this.responses.classes;
+      } else if (msg.includes('trainer') || msg.includes('coach')) {
+        return this.responses.trainer;
+      } else if (msg.includes('location') || msg.includes('address')) {
+        return this.responses.location;
+      } else if (msg.includes('hour') || msg.includes('timing') || msg.includes('open')) {
+        return this.responses.hours;
+      } else if (msg.includes('facility') || msg.includes('equipment')) {
+        return this.responses.facilities;
+      } else if (msg.includes('diet') || msg.includes('food') || msg.includes('meal')) {
+        return this.responses.diet;
+      } else {
+        const arr = this.responses.default;
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+    }
+  }
+
+  // ============================================
+  // APP INITIALIZATION
+  // ============================================
+  const memberManager = new MemberManager();
+  const chatbot = new GymChatbot();
+  let chatbotOpen = false;
+
+  $(document).ready(function(){
+    // Initialize Chatbot
+    initializeChatbot();
+    
+    // Form Submission Handler
+    $('#membershipForm').on('submit', function(e) {
+      e.preventDefault();
+      handleFormSubmission();
+    });
+    
+    // Navigation Handler
+    $('.nav-btn').on('click', function() {
+      handleNavigation($(this).data('section'));
+    });
+
+    // profile buttons actions
+    // (these functions are defined later)
+    window.goToHome = goToHome;
+    window.viewMyProfile = viewMyProfile;
+    
+    // Hamburger Menu
+    $(".ham-burger, .nav ul li a").click(function(){
+      $(".nav").toggleClass("open");
+      $(".ham-burger").toggleClass("active");
+    });
+    
+    // Accordion
+    $(".accordian-container").click(function(){
+      $(".accordian-container").children(".body").slideUp();
+      $(".accordian-container").removeClass("active");
+      $(".accordian-container").children(".head").children("span")
+        .removeClass("fa-angle-down").addClass("fa-angle-up");
+      $(this).children(".body").slideDown();
+      $(this).addClass("active");
+      $(this).children(".head").children("span")
+        .removeClass("fa-angle-up").addClass("fa-angle-down");
+    });
+
+    // Smooth Scrolling
+    $(".nav ul li a, .go-down").click(function(event){
+      if(this.hash !== ""){
+        event.preventDefault();
+        const hash = this.hash;
+        
+        $('html,body').animate({
+          scrollTop:$(hash).offset().top
+        }, 800, function(){
+          window.location.hash = hash;
+        });
+        
+        $(".nav ul li a").removeClass("active");
+        $(this).addClass("active");
+      }
+    });
+    
+    // Show initial notification
+    NotificationManager.info('Welcome to Fitness Club! 💪');
+  });
+
+  // ============================================
+  // FORM SUBMISSION
+  // ============================================
+  function handleFormSubmission() {
+    const name = $('#memberName').val().trim();
+    const email = $('#memberEmail').val().trim();
+    const phone = $('#memberPhone').val().trim();
+    const memberpackage = $('#memberpackage').val();
+    const message = $('#memberMessage').val().trim();
+    
+    if(!name || !email || !phone || !memberpackage) {
+      NotificationManager.error('Please fill all required fields!');
+      return;
+    }
+    
+    if(!isValidEmail(email)) {
+      NotificationManager.error('Please enter a valid email!');
+      return;
+    }
+    
+    if(!isValidPhone(phone)) {
+      NotificationManager.error('Please enter a valid phone number!');
+      return;
+    }
+    
+    const newMember = memberManager.addMember({
+      name, email, phone, package: memberpackage, message
+    });
+    
+    NotificationManager.success(`Welcome ${name}! Your registration is confirmed! 🎉`);
+    $('#membershipForm')[0].reset();
+    
+    // Show profile page for this member
+    showMemberProfile(newMember);
+
+    // Update chatbot with member info
+    setTimeout(() => {
+      chatbot.conversationHistory.push({
+        role: 'bot',
+        message: `Great! I've registered ${name} for ${memberpackage}. One of our trainers will contact you shortly!`
+      });
+    }, 500);
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function isValidPhone(phone) {
+    return /^[0-9\-\+]{7,15}$/.test(phone);
+  }
+
+  // ============================================
+  // MEMBERS DISPLAY
+  // ============================================
+  function displayMembers() {
+    const members = memberManager.getMembers();
+    const grid = $('#membersGrid');
+    
+    grid.empty();
+    
+    if(members.length === 0) {
+      grid.html('<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;"><p>No members registered yet. Be the first to join!</p></div>');
+      return;
+    }
+    
+    members.forEach(member => {
+      const card = `
+        <div class="member-card">
+          <h3>👤 ${escapeHtml(member.name)}</h3>
+          <p><strong>Email:</strong> ${escapeHtml(member.email)}</p>
+          <p><strong>Phone:</strong> ${escapeHtml(member.phone)}</p>
+          <p><strong>Package:</strong> ${escapeHtml(member.package)}</p>
+          <p><strong>Join Date:</strong> ${member.joinDate}</p>
+          <p><strong>Status:</strong> <span style="color: #28a745; font-weight: 600;">${member.status}</span></p>
+          ${member.message ? `<p><strong>Message:</strong> ${escapeHtml(member.message)}</p>` : ''}
+          <button class="delete-btn" onclick="deleteMemberAction(${member.id})">Delete Member</button>
+        </div>
+      `;
+      grid.append(card);
+    });
+  }
+
+  function deleteMemberAction(id) {
+    if(confirm('Are you sure you want to delete this member?')) {
+      memberManager.deleteMember(id);
+      displayMembers();
+      NotificationManager.success('Member deleted successfully!');
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ============================================
+  // NAVIGATION HANDLER
+  // ============================================
+  function handleNavigation(section) {
+    if(section === 'home') {
+      $('#membersView').removeClass('active');
+      $('html, body').animate({scrollTop: 0}, 800);
+    } else if(section === 'members') {
+      $('#membersView').addClass('active');
+      displayMembers();
+      $('html, body').animate({scrollTop: $('#membersView').offset().top - 100}, 800);
+    }
+    
+    $('.nav-btn').removeClass('active');
+    $(`[data-section="${section}"]`).addClass('active');
+  }
+
+  // ============================================
+  // PROFILE VIEW HELPERS
+  // ============================================
+  function showMemberProfile(member) {
+    // populate fields
+    $('#profileName').text(member.name);
+    $('#profileEmail').text(member.email);
+    $('#profilePhone').text(member.phone);
+    $('#profilePackage').text(member.package);
+    $('#profileDate').text(member.joinDate);
+    $('#profileStatus').text(member.status);
+    if(member.message) {
+      $('#profileMessage').text(member.message);
+      $('#messageItem').show();
+    } else {
+      $('#messageItem').hide();
+    }
+    
+    // hide registration and member grid
+    $('section.contact').hide();
+    $('#membersView').removeClass('active');
+    $('#memberProfile').show();
+    $('html, body').animate({scrollTop: $('#memberProfile').offset().top - 100}, 800);
+  }
+
+  function goToHome() {
+    $('#memberProfile').hide();
+    $('section.contact').show();
+    $('html, body').animate({scrollTop: 0}, 800);
+  }
+
+  function viewMyProfile() {
+    $('#memberProfile').hide();
+    $('#membersView').addClass('active');
+    displayMembers();
+    $('html, body').animate({scrollTop: $('#membersView').offset().top - 100}, 800);
+  }
+
+  // ============================================
+  // CHATBOT UI
+  // ============================================
+  function initializeChatbot() {
+    // Create chatbot HTML
+    const chatbotHTML = `
+      <button class="chatbot-toggle" id="chatbotToggle" title="Open Chat">💬</button>
+      <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+          <h3>🤖 ${chatbot.name}</h3>
+          <button class="chatbot-close" id="chatbotClose">×</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages"></div>
+        <div class="chatbot-input">
+          <input type="text" id="chatInput" placeholder="Type your message...">
+          <button id="chatSend">Send</button>
+        </div>
+      </div>
+    `;
+    
+    $('body').append(chatbotHTML);
+    
+    // Event Listeners
+    $('#chatbotToggle').on('click', toggleChatbot);
+    $('#chatbotClose').on('click', closeChatbot);
+    $('#chatSend').on('click', sendChatMessage);
+    $('#chatInput').on('keypress', function(e) {
+      if(e.which === 13) sendChatMessage();
+    });
+    
+    // Initial greeting
+    displayBotMessage('नमस्ते! 👋 I\'m Fitness Buddy. Ask me about our packages, classes, trainers, or facilities!');
+  }
+
+  function toggleChatbot() {
+    if(chatbotOpen) {
+      closeChatbot();
+    } else {
+      openChatbot();
+    }
+  }
+
+  function openChatbot() {
+    chatbotOpen = true;
+    $('#chatbotContainer').addClass('open');
+    $('#chatbotToggle').addClass('hide');
+    $('#chatInput').focus();
+  }
+
+  function closeChatbot() {
+    chatbotOpen = false;
+    $('#chatbotContainer').removeClass('open');
+    $('#chatbotToggle').removeClass('hide');
+  }
+
+  function sendChatMessage() {
+    const input = $('#chatInput');
+    const message = input.val().trim();
+    
+    if(!message) return;
+    
+    // Display user message
+    displayUserMessage(message);
+    input.val('');
+    
+    // Bot response with delay
+    setTimeout(() => {
+      const response = chatbot.getResponse(message);
+      displayBotMessage(response);
+    }, 500);
+  }
+
+  function displayUserMessage(message) {
+    const messagesDiv = $('#chatbotMessages');
+    const msgElement = `
+      <div class="chat-message user">
+        <div class="chat-bubble">${escapeHtml(message)}</div>
+      </div>
+    `;
+    messagesDiv.append(msgElement);
+    messagesDiv.scrollTop(messagesDiv[0].scrollHeight);
+  }
+
+  function displayBotMessage(message) {
+    const messagesDiv = $('#chatbotMessages');
+    const msgElement = `
+      <div class="chat-message bot">
+        <div class="chat-bubble">${escapeHtml(message)}</div>
+      </div>
+    `;
+    messagesDiv.append(msgElement);
+    messagesDiv.scrollTop(messagesDiv[0].scrollHeight);
+  }
+
+</script>
+
+<script src="js/wow.min.js"></script>
+<script>
+    wow = new WOW(
+      {
+        animateClass: 'animated',
+        offset:       0,
+      }
+    );
+    wow.init();
+</script>
+</body>
+</html>
+
+
+
+
+
+
